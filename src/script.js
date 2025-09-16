@@ -87,13 +87,16 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
     trava = true;
 
     const options = {
-        TEMPO: 90, // Tempo atividade em SEGUNDOS
-        ENABLE_SUBMISSION: true,
+        TEMPO_MIN: 60, // Tempo mínimo padrão em segundos
+        TEMPO_MAX: 120, // Tempo máximo padrão em segundos
+        ACCURACY: 80, // Porcentagem de acerto padrão (60-100)
+        TASK_TYPES: ['Normal', 'Expirada'], // Tipos de tarefas padrão (exclui Rascunho)
         LOGIN_URL: 'https://sedintegracoes.educacao.sp.gov.br/credenciais/api/LoginCompletoToken',
         LOGIN_DATA: {
             user: document.getElementById('ra').value,
             senha: document.getElementById('senha').value,
         },
+        ENABLE_SUBMISSION: true,
     };
 
     function makeRequest(url, method = 'GET', headers = {}, body = null) {
@@ -128,8 +131,8 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
                 console.log('✅ Login bem-sucedido:', data);
                 Atividade('SALA-DO-FUTURO', 'Logado com sucesso!');
                 Atividade('D3stroyer SP ETC', 'Atenção: o script não faz redações e atividades em rascunho!');
-                Atividade('D3stroyer SP ETC', 'O script vem com 90 segundos padrão pra fazer as atividades!');
-                sendRequest(data.token);
+                Atividade('D3stroyer SP ETC', 'Configurando opções...');
+                showConfigModal(data.token); // Abre a telinha de configuração
             })
             .catch(error => {
                 Atividade('SALA-DO-FUTURO', 'ERRO! Não foi possível logar!');
@@ -137,6 +140,118 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
                     trava = false;
                 }, 2000);
             });
+    }
+
+    // Nova função para mostrar a telinha de configuração
+    function showConfigModal(token) {
+        // Criar o modal
+        const modal = document.createElement("div");
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(161, 0, 255, 0.8), rgba(75, 0, 130, 0.8));
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #a100ff;
+            color: #e6e6fa;
+            font-family: 'Orbitron', sans-serif;
+            z-index: 1000;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        `;
+
+        const title = document.createElement("h2");
+        title.textContent = "Configurar D3stroyer SP ETC";
+        title.style.textShadow = "0 0 5px #ff00ff";
+        modal.appendChild(title);
+
+        // Tempo mínimo
+        const minTimeLabel = document.createElement("label");
+        minTimeLabel.textContent = "Tempo Mínimo (segundos):";
+        minTimeLabel.style.display = "block";
+        minTimeLabel.style.marginBottom = "5px";
+        const minTimeInput = document.createElement("input");
+        minTimeInput.type = "number";
+        minTimeInput.value = options.TEMPO_MIN;
+        minTimeInput.min = "30";
+        minTimeInput.style.marginBottom = "10px";
+        modal.appendChild(minTimeLabel);
+        modal.appendChild(minTimeInput);
+
+        // Tempo máximo
+        const maxTimeLabel = document.createElement("label");
+        maxTimeLabel.textContent = "Tempo Máximo (segundos):";
+        maxTimeLabel.style.display = "block";
+        maxTimeLabel.style.marginBottom = "5px";
+        const maxTimeInput = document.createElement("input");
+        maxTimeInput.type = "number";
+        maxTimeInput.value = options.TEMPO_MAX;
+        maxTimeInput.min = "60";
+        maxTimeInput.style.marginBottom = "10px";
+        modal.appendChild(maxTimeLabel);
+        modal.appendChild(maxTimeInput);
+
+        // Porcentagem de acerto
+        const accuracyLabel = document.createElement("label");
+        accuracyLabel.textContent = "Porcentagem de Acerto (60-100%):";
+        accuracyLabel.style.display = "block";
+        accuracyLabel.style.marginBottom = "5px";
+        const accuracyInput = document.createElement("input");
+        accuracyInput.type = "number";
+        accuracyInput.value = options.ACCURACY;
+        accuracyInput.min = "60";
+        accuracyInput.max = "100";
+        accuracyInput.style.marginBottom = "10px";
+        modal.appendChild(accuracyLabel);
+        modal.appendChild(accuracyInput);
+
+        // Tipos de tarefas
+        const typesLabel = document.createElement("label");
+        typesLabel.textContent = "Selecionar Tipos de Atividades:";
+        typesLabel.style.display = "block";
+        typesLabel.style.marginBottom = "5px";
+        modal.appendChild(typesLabel);
+
+        const types = ['Normal', 'Expirada', 'Rascunho'];
+        types.forEach(type => {
+            const checkboxLabel = document.createElement("label");
+            checkboxLabel.style.display = "block";
+            checkboxLabel.style.marginBottom = "5px";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = type;
+            checkbox.checked = options.TASK_TYPES.includes(type);
+
+            checkboxLabel.appendChild(checkbox);
+            checkboxLabel.appendChild(document.createTextNode(type));
+            modal.appendChild(checkboxLabel);
+        });
+
+        // Botão de confirmar
+        const confirmButton = document.createElement("button");
+        confirmButton.textContent = "Iniciar Atividades";
+        confirmButton.style.background = "#ff00ff";
+        confirmButton.style.border = "none";
+        confirmButton.style.padding = "10px 20px";
+        confirmButton.style.color = "#e6e6fa";
+        confirmButton.style.borderRadius = "8px";
+        confirmButton.style.cursor = "pointer";
+        confirmButton.style.marginTop = "15px";
+        confirmButton.addEventListener("click", () => {
+            options.TEMPO_MIN = parseInt(minTimeInput.value) || 60;
+            options.TEMPO_MAX = parseInt(maxTimeInput.value) || 120;
+            options.ACCURACY = parseInt(accuracyInput.value) || 80;
+            options.TASK_TYPES = Array.from(modal.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            document.body.removeChild(modal);
+            sendRequest(token);
+        });
+        modal.appendChild(confirmButton);
+
+        document.body.appendChild(modal);
     }
 
     function sendRequest(token) {
@@ -193,9 +308,9 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
                 label: 'Normal',
                 url: `https://edusp-api.ip.tv/tms/task/todo?expired_only=false&filter_expired=true&with_answer=true&publication_target=${room}&answer_statuses=pending&with_apply_moment=false`,
             },
-        ];
+        ].filter(({ label }) => options.TASK_TYPES.includes(label)); // Filtra pelos tipos selecionados
 
-        const options = {
+        const optionsReq = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -205,7 +320,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
         };
 
         const requests = urls.map(({ label, url }) =>
-            fetch(url, options)
+            fetch(url, optionsReq)
                 .then(response => {
                     if (!response.ok) throw new Error(`❌ Erro na ${label}: ${response.statusText}`);
                     return response.json();
@@ -233,6 +348,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
         });
     }
 
+    // OBS ELE NAO FAZ AS RASCUNHO E NEM REDACAO EXPIRADA
     function loadTasks(data, token, room, tipo) {
         if (tipo === "Rascunho") {
             console.log(`⚠️ Ignorado: Tipo "${tipo}" - Nenhuma tarefa será processada.`);
@@ -320,7 +436,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
                         console.log(`📝 Tarefa: ${taskTitle}`);
                         console.log('⚠️ Respostas Fakes:', answersData);
                         if (options.ENABLE_SUBMISSION) {
-                            submitAnswers(taskId, answersData, token, room);
+                            submitAnswers(taskId, answersData, token, room, details.questions.length);
                         }
                         houveEnvio = true;
                     }
@@ -338,7 +454,11 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
         });
     }
 
-    async function submitAnswers(taskId, answersData, token, room) {
+    function delay(ms) {  
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function submitAnswers(taskId, answersData, token, room, numQuestions) {
         let request = {
             status: "submitted",
             accessed_on: "room",
@@ -358,21 +478,22 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             });
         };
 
-        console.log(`⏳ Aguardando ${options.TEMPO} segundos e realizando a tarefa ID: ${taskId}...`);
-        await delay(options.TEMPO * 1000);
+        const tempoRandom = Math.floor(Math.random() * (options.TEMPO_MAX - options.TEMPO_MIN + 1)) + options.TEMPO_MIN;
+        console.log(`⏳ Aguardando ${tempoRandom} segundos e realizando a tarefa ID: ${taskId}...`);
+        await delay(tempoRandom * 1000);
 
         try {
             const response = await sendRequest("POST", `https://edusp-api.ip.tv/tms/task/${taskId}/answer`, request);
             const response2 = JSON.parse(response.responseText);
             const task_idNew = response2.id;
-            getCorrectAnswers(taskId, task_idNew, token);
+            getCorrectAnswers(taskId, task_idNew, token, numQuestions);
         } catch (error) {
             console.error('❌ Erro ao enviar as respostas:', error);
             trava = false;
         }
     }
 
-    function getCorrectAnswers(taskId, answerId, token) {
+    function getCorrectAnswers(taskId, answerId, token, numQuestions) {
         const url = `https://edusp-api.ip.tv/tms/task/${taskId}/answer/${answerId}?with_task=true&with_genre=true&with_questions=true&with_assessed_skills=true`;
         const headers = {
             'User-Agent': navigator.userAgent,
@@ -390,7 +511,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             })
             .then(data => {
                 console.log('📂 Respostas corretas recebidas:', data);
-                putAnswer(data, taskId, answerId, token);
+                putAnswer(data, taskId, answerId, token, numQuestions);
             })
             .catch(error => {
                 console.error('❌ Erro ao buscar respostas corretas:', error);
@@ -398,7 +519,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             });
     }
 
-    function putAnswer(respostasAnteriores, taskId, answerId, token) {
+    function putAnswer(respostasAnteriores, taskId, answerId, token, numQuestions) {
         const url = `https://edusp-api.ip.tv/tms/task/${taskId}/answer/${answerId}`;
         const headers = {
             'User-Agent': navigator.userAgent,
@@ -409,7 +530,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             'x-api-key': token,
         };
 
-        const answer = transformJson(respostasAnteriores);
+        const answer = transformJson(respostasAnteriores, numQuestions);
 
         fetch(url, {
             method: 'PUT',
@@ -429,7 +550,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             });
     }
 
-    function transformJson(jsonOriginal) {
+    function transformJson(jsonOriginal, numQuestions) {
         if (!jsonOriginal || !jsonOriginal.task || !jsonOriginal.task.questions) {
             throw new Error("Estrutura de dados inválida para transformação.");
         }
@@ -440,6 +561,11 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             answers: {},
         };
 
+        const numCorrect = Math.ceil((options.ACCURACY / 100) * numQuestions);
+        let correctIndices = Array.from({length: numQuestions}, (_, i) => i);
+        correctIndices = correctIndices.sort(() => Math.random() - 0.5).slice(0, numCorrect); // Seleciona aleatoriamente quais serão corretas
+
+        let questionIndex = 0;
         for (let questionId in jsonOriginal.answers) {
             let questionData = jsonOriginal.answers[questionId];
             let taskQuestion = jsonOriginal.task.questions.find(q => q.id === parseInt(questionId));
@@ -452,35 +578,36 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
             let answerPayload = {
                 question_id: questionData.question_id,
                 question_type: taskQuestion.type,
-                answer: null,
+                answer: null
             };
+
+            const isCorrect = correctIndices.includes(questionIndex);
+            questionIndex++;
 
             try {
                 switch (taskQuestion.type) {
                     case "order-sentences":
                         if (taskQuestion.options && taskQuestion.options.sentences && Array.isArray(taskQuestion.options.sentences)) {
-                            answerPayload.answer = taskQuestion.options.sentences.map(sentence => sentence.value);
+                            answerPayload.answer = isCorrect ? taskQuestion.options.sentences.map(sentence => sentence.value) : taskQuestion.options.sentences.map(sentence => sentence.value).reverse(); // Inverte para errado
                         }
                         break;
                     case "fill-words":
                         if (taskQuestion.options && taskQuestion.options.phrase && Array.isArray(taskQuestion.options.phrase)) {
-                            answerPayload.answer = taskQuestion.options.phrase
-                                .map(item => item.value)
-                                .filter((_, index) => index % 2 !== 0);
+                            answerPayload.answer = isCorrect ? taskQuestion.options.phrase.map(item => item.value).filter((_, index) => index % 2 !== 0) : taskQuestion.options.phrase.map(item => item.value).filter((_, index) => index % 2 === 0); // Inverte filtro para errado
                         }
                         break;
                     case "text_ai":
                         let cleanedAnswer = removeTags(taskQuestion.comment || '');
-                        answerPayload.answer = { "0": cleanedAnswer };
+                        answerPayload.answer = isCorrect ? { "0": cleanedAnswer } : { "0": "Resposta errada intencional" }; // Resposta errada
                         break;
                     case "fill-letters":
                         if (taskQuestion.options && taskQuestion.options.answer !== undefined) {
-                            answerPayload.answer = taskQuestion.options.answer;
+                            answerPayload.answer = isCorrect ? taskQuestion.options.answer : "errado"; // String errada
                         }
                         break;
                     case "cloud":
                         if (taskQuestion.options && taskQuestion.options.ids && Array.isArray(taskQuestion.options.ids)) {
-                            answerPayload.answer = taskQuestion.options.ids;
+                            answerPayload.answer = isCorrect ? taskQuestion.options.ids : taskQuestion.options.ids.reverse(); // Inverte pra errado
                         }
                         break;
                     default:
@@ -489,7 +616,7 @@ document.getElementById('Enviar').addEventListener('submit', (e) => {
                                 Object.keys(taskQuestion.options).map(optionId => {
                                     const optionData = taskQuestion.options[optionId];
                                     const answerValue = (optionData && optionData.answer !== undefined) ? optionData.answer : false;
-                                    return [optionId, answerValue];
+                                    return [optionId, isCorrect ? answerValue : !answerValue]; // Flip pra errado se não correto
                                 })
                             );
                         }
