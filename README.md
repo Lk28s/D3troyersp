@@ -1,6 +1,6 @@
 # D3stroyer SP ETC 🚀
 
-![D3stroyer SP ETC Banner](https://i.imgur.com/wDhpmSg.gif)  
+![D3stroyer SP ETC Banner](https://raw.githubusercontent.com/LK28/D3stroyerSP/main/banner.gif)  
 *Um script futurista para turbinar suas tarefas na Sala do Futuro!*
 
 **D3stroyer SP ETC** é uma ferramenta open-source desenvolvida por **M1 Smoke**, projetada para automatizar e otimizar a experiência de estudantes na plataforma **Sala do Futuro** (SP). Com um design roxo neon e uma interface intuitiva, este script ajuda a gerenciar tarefas, organizar atividades e maximizar o aprendizado com estilo. Inspirado em projetos como Cebolitos, mas com um toque único, o D3stroyer SP ETC é feito para quem quer eficiência sem perder o vibe "daora".
@@ -25,5 +25,5 @@
 ### Instalação
 1. **Clonar o Repositório**:
    ```bash
-   git clone https://github.com/M1Smoke/D3stroyer-SP-ETC.git
-   cd D3stroyer-SP-ETC
+   git clone https://github.com/LK28/D3stroyerSP.git
+   cd D3stroyerSP
