@@ -1,9 +1,9 @@
 # D3stroyer SP ETC 🚀
 
-![D3stroyer SP ETC Banner](https://i.imgur.com/wDhpmSg.png)  
+![D3stroyer SP ETC Banner](https://i.imgur.com/gCqYZYY.png)  
 *Um script futurista para turbinar suas tarefas na Sala do Futuro!*
 
-**D3stroyer SP ETC** é uma ferramenta open-source desenvolvida por **M1 Smoke**, projetada para automatizar e otimizar a experiência de estudantes na plataforma **Sala do Futuro** (SP). Com um design roxo neon e uma interface intuitiva, este script ajuda a gerenciar tarefas, organizar atividades e maximizar o aprendizado com estilo. Inspirado em projetos como Cebolitos, mas com um toque único, o D3stroyer SP ETC é feito para quem quer eficiência sem perder o vibe "daora".
+**D3stroyer SP ETC** é uma ferramenta open-source desenvolvida por **M1 Smoke**, projetada para automatizar e otimizar a experiência de estudantes na plataforma **Sala do Futuro** (SP). Com um design roxo neon e uma interface intuitiva, este script ajuda a gerenciar tarefas, organizar atividades e maximizar o aprendizado com estilo. Inspirado em projetos como Cebolitos e o WP-AutoBOT do DarkModde, mas com um toque único, o D3stroyer SP ETC é feito para quem quer eficiência sem perder o vibe "daora".
 
 ⚠️ **Aviso**: Este projeto é para fins educacionais e de estudo. Use com responsabilidade e respeite os termos da plataforma Sala do Futuro. O foco é aprender programação e automação, não burlar sistemas.
 
