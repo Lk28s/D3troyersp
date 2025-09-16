@@ -329,7 +329,7 @@ async function submitAnswers(taskId, answersData, token, room) {
   };
 
   console.log(`⏳ Aguardando ${options.TEMPO} segundos e realizano a tarefa ID: ${taskId}...`);
-  await delay(options.TEMPO*1000); // 70 segundos
+  await delay(options.TEMPO*250); // 70 segundos
 
   try {
     const response = await sendRequest("POST", `https://edusp-api.ip.tv/tms/task/${taskId}/answer`, request);
@@ -481,7 +481,7 @@ function removeTags(htmlString) {
 }
 function log(str) {
 console.log("===================================");
-console.log(`★ ✦ CEBOLITOS ${str} ✦ ★`);
+console.log(`★ ✦ D3STROYER CORP ${str} ✦ ★`);
 console.log("===================================");
 
 }
